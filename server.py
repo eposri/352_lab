@@ -1,4 +1,6 @@
 import socket
+from Cryptodome.Cipher import AES
+from Cryptodome.Util.Padding import unpad
 
 ####### A SIMPLE ILLUSTRATION OF THE TCP SERVER #######
 
@@ -20,19 +22,19 @@ serverSock.listen(100)
 # Keep accepting connections forever
 while True:
 
-	print("Waiting for clients to connect...")
-	
-	# Accept a waiting connection
-	cliSock, cliInfo = serverSock.accept()
-	
-	print("Client connected from: " + str(cliInfo))
-	
-	# Receive the data the client has to send.
-	# This will receive at most 1024 bytes
-	cliMsg = cliSock.recv(1024)
+    print("Waiting for clients to connect...")
+    
+    # Accept a waiting connection
+    cliSock, cliInfo = serverSock.accept()
+    
+    print("Client connected from: " + str(cliInfo))
+    
+    # Receive the data the client has to send.
+    # This will receive at most 1024 bytes
+    cliMsg = cliSock.recv(1024)
 
-	print("Client sent " + str(cliMsg))
+    print("Client sent " + str(cliMsg))
 
-	
-	# Hang up the client's connection
-	cliSock.close()
+    decCipher = AES.new(key, AES.MODE_ECB)
+    # Hang up the client's connection
+    cliSock.close()
