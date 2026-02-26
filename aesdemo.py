@@ -5,8 +5,6 @@
 # source ./env/bin/activate
 # python3 aesdemo.py
  
-#Hello
- 
 from Cryptodome.Cipher import AES
 
 ######### BASIC ENCRYPTION ###########

@@ -1,14 +1,15 @@
 import socket
+import sys
+
 from Cryptodome.Cipher import AES
 from Cryptodome.Util.Padding import pad
 
-
 # Server's IP address
-SERVER_IP = '127.0.0.1'
+# SERVER_IP = '127.0.0.1'
 
 
 # The server's port number
-SERVER_PORT = 1235
+# SERVER_PORT = 1235
 '''
 well-known ports: 0-1023
 registered ports: 1024-49151
@@ -17,7 +18,7 @@ dynamic/private ports: 49152-65535
 '''
 
 ######### BASIC ENCRYPTION ###########
-
+'''
 while True:
 # The key (must be 16 bytes)
     sixteen_byt_key = input("Please enter a 16 byte key: ").strip()
@@ -28,6 +29,12 @@ while True:
         print("Invalid key size, try again")
     else:
         break
+'''
+
+# Requirement #4: python3 client.py <server IP> <server port> <key>
+SERVER_IP = sys.argv[2]
+SERVER_PORT = int(sys.argv[3])
+key = sys.argv[4].encode()
     
 message = input("Enter message to send: ").strip()
 message_byt = message.encode()
