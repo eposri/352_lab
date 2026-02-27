@@ -1,69 +1,53 @@
-import socket
-import sys
 
-from Cryptodome.Cipher import AES
-from Cryptodome.Util.Padding import pad
-
-# Server's IP address
-# SERVER_IP = '127.0.0.1'
-
-
-# The server's port number
-# SERVER_PORT = 1235
 '''
 well-known ports: 0-1023
 registered ports: 1024-49151
     => 1234 / 1235 is a registered port for custom
 dynamic/private ports: 49152-65535
 '''
+import socket
+import sys
+from Cryptodome.Cipher import AES
+from Cryptodome.Util.Padding import pad
 
-######### BASIC ENCRYPTION ###########
-'''
-while True:
-# The key (must be 16 bytes)
-    sixteen_byt_key = input("Please enter a 16 byte key: ").strip()
-    # given key: abcdefghnbfghasd (Requirement 4)
-    key = sixteen_byt_key.encode()
-    # makes sure that the users input is exactly 16 bytes
-    if len(key) != 16:
-        print("Invalid key size, try again")
-    else:
-        break
-'''
+#CLient has to exactly type in terminal argument of 4
+#which are: python3, client.py, serverIP, server port, 16 byte key 
+if len(sys.argv) != 4:
+    print("Usage: python3 client.py <server IP> <server port> <16-byte key>")
+    sys.exit()
 
-# Requirement #4: python3 client.py <server IP> <server port> <key>
-SERVER_IP = sys.argv[2]
-SERVER_PORT = int(sys.argv[3])
-key = sys.argv[4].encode()
-    
-message = input("Enter message to send: ").strip()
-message_byt = message.encode()
+#here declaring SERVER_IP to be argument 1 in terminal in this case server IP
+#setting SERVER_PORT to be argument 2 in terminal in this case <server port>
+#Setting key which used to encrypt to argument 3 in this case <16-byte key> 
+# in terminal & turn into bits
+SERVER_IP = sys.argv[1]
+SERVER_PORT = int(sys.argv[2])
+key = sys.argv[3].encode()
 
-# Padding the message below to be as multiple of 16
-padded_msg = pad(message_byt, 16)
+#key case just in case key not exactly 16 bytes then will tell client need 
+# be exactly exactly 16 bytes
+if len(key) != 16:
+    print("Error: key must be exactly 16 bytes.")
+    sys.exit()
 
-# Set up the AES encryption class
+#ask client enter message then turn message into bits with .encode()
+message = input("Enter message to send: ")
+message_bytes = message.encode()
+
+#padd message into 16 bytes just incase user not d0 16 bytes because
+#AES works in 16 bytes
+padded_msg = pad(message_bytes, 16)
+
+#declare encrypting tool with key
+#then use encCipher to encrypt client message with .encrypt()
 encCipher = AES.new(key, AES.MODE_ECB)
-
-# AES requires plain/cipher text blocks to be 16 bytes
 cipherText = encCipher.encrypt(padded_msg)
 
-print(type(key))
+print("Cipher text:", cipherText)
 
-print("Cipher text: ", cipherText)
-
-# Send the message to the server
-# NOTE: the user input is of type string
-# Sending data over the socket requires.
-# First converting the string into bytes.
-# encode() function achieves this.
-
-# The client's socket
+#create a connection to server to be able to transfer 
+# ciphertext to be able decrypt soon
 cliSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Attempt to connect to the server
 cliSock.connect((SERVER_IP, SERVER_PORT))
-
-cliSock.send(cipherText)
+cliSock.sendall(cipherText)
 cliSock.close()
-print("The Encrypted message was sent over to server.")
