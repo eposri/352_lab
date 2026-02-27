@@ -23,9 +23,15 @@ if len(key) != 16:
     print("Error: key must be exactly 16 bytes.")
     sys.exit()
 
-# Create socket from which client and server can communicate in
-serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serverSock.bind(("", PORT_NUMBER))
+# Create a socket
+serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+
+# Associate the socket with the port
+serverSock.bind(('', PORT_NUMBER)) 
+
+# Start listening for incoming connections (we can have
+# at most 100 connections waiting to be accepted before
+# the server starts rejecting new connections)
 serverSock.listen(100)
 
 #will show to user where server listening on what port
