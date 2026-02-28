@@ -10,7 +10,6 @@ def aes_encrypt(message, key):
     # then use encCipher to encrypt client message with .encrypt()
     enc_cipher = AES.new(key, AES.MODE_ECB)
     cipher_text = enc_cipher.encrypt(padded_msg)
-    print("Cipher text:", cipher_text)
     return cipher_text
 
 def aes_decrypt(key, cipher_text):
@@ -19,8 +18,15 @@ def aes_decrypt(key, cipher_text):
         dec_cipher = AES.new(key, AES.MODE_ECB)
         padded_plain = dec_cipher.decrypt(cipher_text)
         plain_text = unpad(padded_plain, 16)
-        #decrypted_msg, signature = plain_text.split(b"+")
-        print("Decrypted message:", plain_text.decode())
+
+        if b"+++" in plain_text:
+            decrypted_msg, signature = plain_text.split(b"+++")
+            print("Decrypted message:", decrypted_msg.decode())
+            return decrypted_msg, signature
+        else:
+            print("Decrypted message:", plain_text.decode())
+            return plain_text, None
+
     except:
         print("Decryption failed (wrong key or corrupted data).")
     

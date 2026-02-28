@@ -2,6 +2,7 @@ import socket
 import sys
 
 from aes import aes_encrypt
+from dsa import dsa_sign
 
 # Requirement 4: python3 client.py <server IP> <server port> <key> 
 if len(sys.argv) != 4:
@@ -18,8 +19,14 @@ if len(key) != 16:
 
 message = input("Enter message to send: ")
 
+# sign message using DSA
+signature = dsa_sign(message)
+
+# append signature to message for AES with delimiter for separation later
+message = message.encode() + b"+++" + signature
+
 # encrypt message using AES
-cipher_text = aes_encrypt(message.encode(), key)
+cipher_text = aes_encrypt(message, key)
 
 # create a connection to server to be able to transfer 
 # ciphertext to be able decrypt soon

@@ -2,6 +2,7 @@ import socket
 import sys
 
 from aes import aes_decrypt
+from dsa import dsa_verify
 
 # Requirement 2: python3 server.py <port number> <key>
 if len(sys.argv) != 3:
@@ -47,7 +48,11 @@ while True:
         continue
 
     # decrypt message using AES
-    aes_decrypt(key, cipher_text)
+    plain_text, signature = aes_decrypt(key, cipher_text)
+
+    # verify signature if exists
+    if signature is not None:
+        dsa_verify(plain_text.decode(), signature)
 
     # exit loop for testing purposes
     exit = input("type 'q' to exit server: ")
