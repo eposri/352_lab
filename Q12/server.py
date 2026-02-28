@@ -61,15 +61,36 @@ while True:
         print("No data received.")
         continue
 
-    # Decrypt and print
+    # Decrypt and print received blockcipher
     try:
         # announcing decCIpher whic will be used to decrypt message
         # Then will decrypt ciphertext from client side 
         # Once decrypted will use unpad function to remove extra bytes added to give original text
         # finally will turn message from bits to str format for user to understand with .decode()
-        decCipher = AES.new(key, AES.MODE_ECB)
-        paddedPlain = decCipher.decrypt(cipherText)
-        plainText = unpad(paddedPlain, 16)
-        print("Decrypted message:", plainText.decode(errors="replace"))
+        decCipher = AES.new(key, AES.MODE_ECB)   
+        dec_cli_msg = decCipher.decrypt(cipherText)
+        plainText = unpad(dec_cli_msg, 16)
+
+        # decCipher = AES.new(key, AES.MODE_ECB)
+        # paddedPlain = decCipher.decrypt(cipherText)
+        # plainText = unpad(paddedPlain, 16)
+        # decrypted_msg, signature = plainText.split(b"+")
+        # print("Decrypted message:", decrypted_msg.decode(errors="replace"))
+
+        # paddedPlain, paddedSig = plainText.split("+")
+        # signature_pad = paddedSig[0]
+        # text = paddedPlain[0]
+        # print(signature_pad)
+        # print(text)
+        # plainText = msg "+" signature, need to split
+        # decrypted_msg, signature = plainText.split("+")
+        # print(decrypted_msg)
+        # print(signature)
+        msg_bytes, sig_bytes = plainText.split(b"+", 1)
+
+        decrypted_message = msg_bytes.decode(errors="replace")  # decode ONLY the message part
+
+        print("Decrypted message:", decrypted_message)
+        rsa_server(decrypted_message, sig_bytes)
     except:
         print("Decryption failed (wrong key or corrupted data).")

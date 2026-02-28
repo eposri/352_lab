@@ -18,7 +18,6 @@ import Cryptodome.Signature.pkcs1_15
 keyPair = RSA.generate(bits=1024)
 # Get just the public key
 pubKey = keyPair.publickey()
-privKey = keyPair.privatekey()
 ###############################################################
 
 
@@ -33,15 +32,18 @@ def rsa_client(user_msg):
     #privKey = RSA.import_key(open(PRIVATE_KEY_FILE_NAME).read())
 
     # Save the private key to the file
-    f = open("rsa_private_key.pem", "wb")
-    f.write(privKey.export_key())
-    f.close()
+    # f = open("rsa_private_key.pem", "wb")
+    # f.write(keyPair.export_key())
+    # f.close()
 
+    #need the file of pub for server to be able to use to verify
+    #digital signature
     # Save the private key to the file
     f = open("rsa_public_key.pem", "wb")
     # Get the corresponding public key
     f.write(pubKey.export_key())
     f.close()
+
 
     # User's message to be digitally signed by RSA
     msg = user_msg.encode()
@@ -50,7 +52,7 @@ def rsa_client(user_msg):
     hash = SHA256.new(msg)
 
     # Sign the hash
-    sig1 = Cryptodome.Signature.pkcs1_15.new(privKey)
+    sig1 = Cryptodome.Signature.pkcs1_15.new(keyPair)
     signature = sig1.sign(hash)
     return signature
 
@@ -62,8 +64,13 @@ def rsa_client(user_msg):
 def rsa_server(decrypted_msg, signature):
 
     hash = SHA256.new(decrypted_msg.encode())
-        
-    verifier = Cryptodome.Signature.pkcs1_15.new(pubKey)
+    
+    #server loads the public key here
+    #we import the public key from client and opne and read it
+    #the RSA turns the PEM text back into an RSA key
+    #overall recreating the clients public key with this file
+    client_pub = RSA.import_key(open("rsa_public_key.pem", "rb").read())
+    verifier = Cryptodome.Signature.pkcs1_15.new(client_pub)
 
 
     # If the verification succeeds, nothing is returned.  Otherwise a ValueError exception is raised
