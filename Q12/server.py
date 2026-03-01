@@ -26,7 +26,7 @@ print("Server listening on port:", PORT_NUMBER)
 # server continuously accepting clients
 while True:
     print("Waiting for clients to connect...")
-    print("Enter 'quit' to exit server.")
+    # print("Enter 'quit' to exit server.") to implement later
     
     # TCP creates new socket for each client connection
     connection_sock, addr = server_sock.accept()
@@ -44,11 +44,13 @@ while True:
     if len(cipher_text) == 0:
         print("No data received.")
         continue
-
-    # decrypt message using AES
-    plain_text, signature, choice = aes_decrypt(key, cipher_text)
-
-    if choice == "1":
-        rsa_verify(plain_text.decode(), signature)
-    else:
-        dsa_verify(plain_text.decode(), signature)
+    
+    try:
+        # decrypt message using AES
+        plain_text, signature, choice = aes_decrypt(key, cipher_text)
+        if choice == "1":
+            rsa_verify(plain_text.decode(), signature)
+        else:
+            dsa_verify(plain_text.decode(), signature)
+    except TypeError:
+        print("Secret key mismatch between server and client.")

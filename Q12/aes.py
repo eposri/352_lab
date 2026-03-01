@@ -28,6 +28,5 @@ def aes_decrypt(key, cipher_text):
         #else:
             #print("Decrypted message:", plain_text.decode())
             #return plain_text, None
-
     except:
         print("Decryption failed (wrong key or corrupted data).")

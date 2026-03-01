@@ -30,7 +30,7 @@ message_bytes = message.encode()
 # pad message into 16 bytes
 padded_msg = pad(message_bytes, 16)
 
-#declare encrypting tool with key
+# declare encrypting tool with key
 # then use encCipher to encrypt client message with .encrypt()
 encCipher = AES.new(key, AES.MODE_ECB)
 cipherText = encCipher.encrypt(padded_msg)
