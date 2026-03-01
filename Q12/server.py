@@ -3,6 +3,7 @@ import sys
 
 from aes import aes_decrypt
 from dsa import dsa_verify
+from rsa import rsa_verify
 
 # Requirement 2: python3 server.py <port number> <key>
 if len(sys.argv) != 3:
@@ -16,31 +17,28 @@ if len(key) != 16:
     print("Error: key must be exactly 16 bytes.")
     sys.exit()
 
-# Create a socket and associate to the inputted port number
+# create a socket and associate to the inputted port number
 server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-
 server_sock.bind(('', PORT_NUMBER)) 
-
 server_sock.listen(1)
-
 print("Server listening on port:", PORT_NUMBER)
 
-# Here is server keep accepting clients forever using while statement
+# server continuously accepting clients
 while True:
     print("Waiting for clients to connect...")
+    print("Enter 'quit' to exit server.")
+    
     # TCP creates new socket for each client connection
     connection_sock, addr = server_sock.accept()
     print("Client connected from:", addr)
 
-    # Receive encrypted message
+    # receive encrypted message
     cipher_text = b""
-
     while True:
         chunk = connection_sock.recv(1024) # get up to 4096 bytes of data
         if not chunk:
             break
         cipher_text += chunk
-
     connection_sock.close()
 
     if len(cipher_text) == 0:
@@ -48,14 +46,9 @@ while True:
         continue
 
     # decrypt message using AES
-    plain_text, signature = aes_decrypt(key, cipher_text)
+    plain_text, signature, choice = aes_decrypt(key, cipher_text)
 
-    # verify signature if exists
-    if signature is not None:
+    if choice == "1":
+        rsa_verify(plain_text.decode(), signature)
+    else:
         dsa_verify(plain_text.decode(), signature)
-
-    # exit loop for testing purposes
-    exit = input("type 'q' to exit server: ")
-    if exit.lower() == 'q':
-        print("Exiting server.")
-        break
